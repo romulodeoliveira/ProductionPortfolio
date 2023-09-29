@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Roboto Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="icon" href="../img/favicon.ico">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <Main>
+        <div class="DivPresentation">
+            <h1 class="Presentation">Gerador e Verificador de CPF's</h1>
+        </div>
+
+        <div class="AboutMe">
+            <p>
+                Projeto destinado a portfólio e escrito inteiramente com C# e ASP .NET. Totalmente gratuito, este projeto foi pensado para auxiliar programadores e desenvolvedores de sistemas a realizar testes durante o processo de criação de um software online.
+            </p>
+        </div>
+
+        <div class="IndividualProjectHeader">
+            <a href="https://romulodeoliveira.net/" class="IndividualProjectSourceCode">
+                <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                    <image href="../img/icons/house-fill.svg" width="16" height="16" />
+                </svg>
+                Home
+            </a>
+            <a href="https://dummydatagenerator.azurewebsites.net/swagger/index.html" class="IndividualProjectSourceCode" target="_blank">
+                <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                    <image href="../img/icons/tools.svg" width="16" height="16" />
+                </svg>
+                Swagger
+            </a>
+            <a href="https://github.com/romulodeoliveira/DummyDataGenerator-Dotnet6" class="IndividualProjectSourceCode" target="_blank">
+                <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                    <image href="../img/icons/github.svg" width="16" height="16" />
+                </svg>
+                Source Code
+            </a>
+        </div>
+    </Main>
+
+    <section class="Projects">
+        <div class="IndividualProject">
+            <div class="ProjectsHeader">
+                <h2 class="ProjectsTitle">Gerador</h2>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="formattedCPF">
+                    <label class="form-check-label" for="formattedCPF">CPF Formatado:</label>
+                </div>
+                <br>
+                <button onclick="gerarCPF()" class="btn btn-secondary">Gerar CPF</button>
+            </div>
+
+            <!-- Estrutura que aparecerá apenas quando houver uma requisição -->
+            <div id="resultado-cpf-gerado" style="display: none;">
+                <div class="IndividualProjectHeader">
+                    <label class="form-label">CPF Gerado:</label>
+                    <p id="cpf-gerado" class="IndividualProjectDescription"></p>
+                    <button class="btn btn-outline-secondary" onclick="copiarCPF()">Copiar</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="Projects">
+        <div class="IndividualProject">
+            <div class="DivPresentation">
+                <h2 class="ProjectsTitle">Verificador</h2>
+            </div>
+
+            <div class="input-group mb-3">
+                <input type="text" id="cpfInput" class="form-control" placeholder="Digite um CPF">
+                <button onclick="verificarCPF()" class="btn btn-outline-secondary">Verificar</button>
+            </div>
+
+            <div id="resultado-cpf-verificado"></div>
+        </div>
+    </section>
+
+    <script>
+        function gerarCPF() {
+            const formattedCPFCheckbox = document.getElementById("formattedCPF");
+            const convertToFormattedCPF = formattedCPFCheckbox.checked;
+
+            // Fazer a requisição para a API
+            fetch(`https://dummydatagenerator.azurewebsites.net/api/CPF/cpf-generator?ConvertToFormattedCPF=${convertToFormattedCPF}`)
+                .then(response => response.text())
+                .then(data => {
+                    const resultadoDiv = document.getElementById("resultado-cpf-gerado");
+                    const cpfGeradoSpan = document.getElementById("cpf-gerado");
+                    cpfGeradoSpan.textContent = data;
+                    resultadoDiv.style.display = "block"; // Torna a estrutura visível
+                })
+                .catch(error => {
+                    console.error("Erro ao gerar CPF:", error);
+                });
+        }
+
+        function copiarCPF() {
+            const cpfGeradoSpan = document.getElementById("cpf-gerado");
+            const cpfGerado = cpfGeradoSpan.textContent;
+
+            // Código para copiar o CPF para a área de transferência
+            const textarea = document.createElement("textarea");
+            textarea.value = cpfGerado;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+
+            alert("CPF copiado para a área de transferência: " + cpfGerado);
+        }
+    </script>
+
+    <script>
+        const resultados = [];
+
+        function verificarCPF() {
+            const cpfInput = document.getElementById("cpfInput");
+            const cpf = cpfInput.value;
+
+            // Fazer a requisição para a API
+            fetch(`https://dummydatagenerator.azurewebsites.net/api/CPF/cpf-valid?request=${cpf}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultados.push({ cpf, valido: data });
+
+                    // Limpar o input
+                    cpfInput.value = "";
+
+                    // Atualizar a div de resultados
+                    atualizarResultados();
+                })
+                .catch(error => {
+                    console.error("Erro ao verificar CPF:", error);
+                });
+        }
+
+        function atualizarResultados() {
+            const resultadoDiv = document.getElementById("resultado-cpf-verificado");
+            resultadoDiv.innerHTML = "";
+
+            for (const resultado of resultados) {
+                const divResultado = document.createElement("div");
+                divResultado.classList.add("conteudo-separado-pordivisorias");
+                divResultado.textContent = `CPF: ${resultado.cpf} | Válido: ${resultado.valido ? "Sim" : "Não"}`;
+                resultadoDiv.appendChild(divResultado);
+            }
+        }
+    </script>
+</body>
+
+</html>
